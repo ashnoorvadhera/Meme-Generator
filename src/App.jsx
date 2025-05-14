@@ -63,13 +63,13 @@ function App() {
             </button>
             <input type='file' accept='image/*' ref={fileInputRef} className='hidden' onChange={fileChangeHandler} />
           </div>
-          <div className="grid grid-cols-4 gap-8 p-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-8 md:p-12">
             {memes.map((meme) => (
               <img 
                 key={meme.id}
                 src={meme.blank}
                 alt={meme.name}
-                className="w-full h-90 object-cover rounded-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
+                className="w-full h-auto aspect-square object-cover rounded-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
                 onClick={() => setSelectedMeme(meme)}
               />
             ))}
