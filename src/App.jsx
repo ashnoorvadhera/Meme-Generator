@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import ClipLoader from "react-spinners/ClipLoader";
 import { FaUpload } from 'react-icons/fa';
 import MemeEditor from './components/MemeEditor.jsx'; 
 import GradientText from './components/GradientText.jsx';
@@ -10,15 +11,22 @@ function App() {
 
   const [memes, setMemes] = useState([]);
 
+  const [loading , setLoading] = useState(true);
+
   const fileInputRef = useRef(null);
 
   const memeGenerator = () => {
+    setLoading(true);
     fetch("https://api.memegen.link/templates")
       .then(res => res.json())
       .then(data => {
         setMemes(data);
+        setLoading(false);
       })
-      .catch(error => console.error('Error fetching memes:', error));
+      .catch(error => {
+        console.error('Error fetching memes:', error);
+        setLoading(false);
+      });
   }
 
   const fileChangeHandler = (e) => {
@@ -26,7 +34,7 @@ function App() {
     if(file){
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedMeme({blank: e.target.result}, {name: "Custom Upload"});
+        setSelectedMeme({blank: e.target.result, name: "Custom Upload"});
       }
       reader.readAsDataURL(file)
     }
@@ -63,17 +71,23 @@ function App() {
             </button>
             <input type='file' accept='image/*' ref={fileInputRef} className='hidden' onChange={fileChangeHandler} />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-8 md:p-12">
-            {memes.map((meme) => (
-              <img 
-                key={meme.id}
-                src={meme.blank}
-                alt={meme.name}
-                className="w-full h-auto aspect-square object-cover rounded-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
-                onClick={() => setSelectedMeme(meme)}
-              />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center items-center min-h-[300px]">
+              <ClipLoader color="#00ffcc" size={50} />
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4 sm:p-8 md:p-12">
+              {memes.map((meme) => (
+                <img 
+                  key={meme.id}
+                  src={meme.blank}
+                  alt={meme.name}
+                  className="w-full h-auto aspect-square object-cover rounded-lg cursor-pointer transition-transform hover:scale-105 hover:shadow-lg"
+                  onClick={() => setSelectedMeme(meme)}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </>
